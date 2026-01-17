@@ -1,0 +1,146 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile */
+  width: 100vw;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 60px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  flex-shrink: 0;
+  /* Safe area for iPhone notch */
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+.calendarContainer {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  /* Safe area for iPhone home indicator */
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.monthHeader {
+  position: sticky;
+  top: 60px; /* Below toolbar */
+  z-index: 50;
+  background-color: #ffffff;
+  padding: 12px 16px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  border-bottom: 2px solid #e0e0e0;
+  /* Safe area for iPhone notch */
+  padding-top: calc(12px + env(safe-area-inset-top, 0));
+}
+
+.weekRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  width: 100%;
+  min-height: calc((100vh - 120px) / 5); /* Approximately 5 weeks visible */
+  min-height: calc((100dvh - 120px) / 5);
+}
+
+.dayCell {
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 8px 4px;
+  background-color: #ffffff;
+  position: relative;
+  min-height: 80px;
+}
+
+.dayCell.monthBorder {
+  border-left: 3px solid #333333;
+}
+
+.dayLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.dayName {
+  font-size: 11px;
+  font-weight: 500;
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dayNumber {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.dayCell.today {
+  background-color: #f0f7ff;
+}
+
+.dayCell.today .dayNumber {
+  color: #0066cc;
+  font-weight: 700;
+}
+
+.dayCell.today .dayName {
+  color: #0066cc;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .weekRow {
+    min-height: calc((100vh - 120px) / 5);
+    min-height: calc((100dvh - 120px) / 5);
+  }
+
+  .dayCell {
+    min-height: 70px;
+    padding: 6px 2px;
+  }
+
+  .dayNumber {
+    font-size: 18px;
+  }
+
+  .dayName {
+    font-size: 10px;
+  }
+
+  .monthHeader {
+    font-size: 16px;
+    padding: 10px 12px;
+  }
+}
+
+/* iPhone specific optimizations */
+@supports (-webkit-touch-callout: none) {
+  .calendarContainer {
+    /* Better scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Prevent layout shift during scroll */
+.weekRow {
+  contain: layout style paint;
+}
