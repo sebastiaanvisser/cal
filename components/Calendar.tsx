@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { Week } from './types'
 import WeekHeader from './WeekHeader'
 import DayCell from './DayCell'
+import Toolbar from './Toolbar'
 import styles from './Calendar.module.css'
 
 const INITIAL_WEEKS_BEFORE = 50
@@ -225,118 +226,10 @@ export default function Calendar() {
     }
   }, [weeks])
 
-  // Scroll to previous month
-  const scrollToPreviousMonth = useCallback(() => {
-    const today = todayRef.current
-    const prevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1)
-    prevMonth.setHours(0, 0, 0, 0)
-    scrollToDate(prevMonth)
-  }, [scrollToDate])
-
-  // Scroll to start of this month
-  const scrollToThisMonth = useCallback(() => {
-    const today = todayRef.current
-    const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
-    firstOfMonth.setHours(0, 0, 0, 0)
-    scrollToDate(firstOfMonth)
-  }, [scrollToDate])
-
-  // Scroll to today
-  const scrollToToday = useCallback(() => {
-    scrollToDate(todayRef.current)
-  }, [scrollToDate])
-
-  // Scroll to next month
-  const scrollToNextMonth = useCallback(() => {
-    const today = todayRef.current
-    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1)
-    nextMonth.setHours(0, 0, 0, 0)
-    scrollToDate(nextMonth)
-  }, [scrollToDate])
-
-  // Scroll to month after next
-  const scrollToMonthAfter = useCallback(() => {
-    const today = todayRef.current
-    const monthAfter = new Date(today.getFullYear(), today.getMonth() + 2, 1)
-    monthAfter.setHours(0, 0, 0, 0)
-    scrollToDate(monthAfter)
-  }, [scrollToDate])
-
-  // Scroll to month after the month after
-  const scrollToMonthAfterNext = useCallback(() => {
-    const today = todayRef.current
-    const monthAfterNext = new Date(today.getFullYear(), today.getMonth() + 3, 1)
-    monthAfterNext.setHours(0, 0, 0, 0)
-    scrollToDate(monthAfterNext)
-  }, [scrollToDate])
-
-  // Get month names for buttons
-  const getMonthNames = () => {
-    const today = todayRef.current
-    const prevMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1)
-    const prevMonth = prevMonthDate.toLocaleDateString('en-US', { month: 'short' })
-    const thisMonth = today.toLocaleDateString('en-US', { month: 'short' })
-    const nextMonthDate = new Date(today.getFullYear(), today.getMonth() + 1, 1)
-    const nextMonth = nextMonthDate.toLocaleDateString('en-US', { month: 'short' })
-    const monthAfterDate = new Date(today.getFullYear(), today.getMonth() + 2, 1)
-    const monthAfter = monthAfterDate.toLocaleDateString('en-US', { month: 'short' })
-    const monthAfterNextDate = new Date(today.getFullYear(), today.getMonth() + 3, 1)
-    const monthAfterNext = monthAfterNextDate.toLocaleDateString('en-US', { month: 'short' })
-    
-    return { prevMonth, thisMonth, nextMonth, monthAfter, monthAfterNext }
-  }
-
-  const { prevMonth, thisMonth, nextMonth, monthAfter, monthAfterNext } = getMonthNames()
-
   return (
     <div className={styles.container}>
       {/* Sticky Toolbar */}
-      <div className={styles.toolbar}>
-        <div className={styles.toolbarButtons}>
-          <button 
-            className={styles.toolbarButton}
-            onClick={scrollToPreviousMonth}
-            type="button"
-          >
-            {prevMonth}
-          </button>
-          <button 
-            className={styles.toolbarButton}
-            onClick={scrollToThisMonth}
-            type="button"
-          >
-            {thisMonth}
-          </button>
-          <button 
-            className={styles.toolbarButton}
-            onClick={scrollToToday}
-            type="button"
-          >
-            Today
-          </button>
-          <button 
-            className={styles.toolbarButton}
-            onClick={scrollToNextMonth}
-            type="button"
-          >
-            {nextMonth}
-          </button>
-          <button 
-            className={styles.toolbarButton}
-            onClick={scrollToMonthAfter}
-            type="button"
-          >
-            {monthAfter}
-          </button>
-          <button 
-            className={styles.toolbarButton}
-            onClick={scrollToMonthAfterNext}
-            type="button"
-          >
-            {monthAfterNext}
-          </button>
-        </div>
-      </div>
+      <Toolbar onScrollToDate={scrollToDate} today={todayRef.current} />
 
       {/* Calendar Content */}
       <div className={styles.calendarContainer} ref={containerRef}>
