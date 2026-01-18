@@ -1,0 +1,66 @@
+.dayCell {
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 8px 4px;
+  background-color: #ffffff;
+  position: relative;
+  min-height: 80px;
+}
+
+.dayCell.monthBorder {
+  border-left: 3px solid #333333;
+}
+
+.dayLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.dayName {
+  font-size: 11px;
+  font-weight: 500;
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dayNumber {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.dayCell.today {
+  background-color: #f0f7ff;
+}
+
+.dayCell.today .dayNumber {
+  color: #0066cc;
+  font-weight: 700;
+}
+
+.dayCell.today .dayName {
+  color: #0066cc;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .dayCell {
+    min-height: 70px;
+    padding: 6px 2px;
+  }
+
+  .dayNumber {
+    font-size: 18px;
+  }
+
+  .dayName {
+    font-size: 10px;
+  }
+}

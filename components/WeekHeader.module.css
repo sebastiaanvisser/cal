@@ -1,0 +1,68 @@
+.metaBlock {
+  border: 1px solid #e0e0e0;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  min-height: 80px;
+  flex-shrink: 0;
+  width: 60px;
+}
+
+.metaContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.metaMonths {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.metaMonth {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.metaYear {
+  font-size: 10px;
+  color: #666666;
+  font-weight: 500;
+}
+
+.metaWeek {
+  font-size: 9px;
+  color: #888888;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .metaBlock {
+    width: 50px;
+    padding: 6px 2px;
+    min-height: 70px;
+  }
+
+  .metaMonth {
+    font-size: 11px;
+  }
+
+  .metaYear {
+    font-size: 9px;
+  }
+
+  .metaWeek {
+    font-size: 8px;
+  }
+}

@@ -1,15 +1,11 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { Week } from './types'
+import WeekHeader from './WeekHeader'
+import DayCell from './DayCell'
 import styles from './Calendar.module.css'
 
-interface Week {
-  startDate: Date
-  days: Date[]
-  weekOffset: number // Offset from the base week (0 = week containing today)
-}
-
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const INITIAL_WEEKS_BEFORE = 50
 const INITIAL_WEEKS_AFTER = 50
 const LOAD_MORE_THRESHOLD = 10 // Load more when within 10 weeks of edge
@@ -199,77 +195,9 @@ export default function Calendar() {
     }
   }, [weeks])
 
-  const getMonthYear = (date: Date): { month: string; year: string } => {
-    return {
-      month: date.toLocaleDateString('en-US', { month: 'short' }),
-      year: date.getFullYear().toString()
-    }
-  }
-
-  const getMonthKey = (date: Date): string => {
-    return `${date.getFullYear()}-${date.getMonth()}`
-  }
-
-  const isNewMonth = (currentDate: Date, previousDate: Date | null): boolean => {
-    if (!previousDate) return true
-    return currentDate.getMonth() !== previousDate.getMonth() ||
-           currentDate.getFullYear() !== previousDate.getFullYear()
-  }
-
   const isToday = (date: Date): boolean => {
     const today = todayRef.current
     return date.getTime() === today.getTime()
-  }
-
-  const formatDay = (date: Date): string => {
-    return date.getDate().toString()
-  }
-
-  const getDayName = (date: Date): string => {
-    return DAYS[date.getDay() === 0 ? 6 : date.getDay() - 1]
-  }
-
-  // Get week number (ISO week number)
-  const getWeekNumber = (date: Date): number => {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-    const dayNum = d.getUTCDay() || 7
-    d.setUTCDate(d.getUTCDate() + 4 - dayNum)
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
-    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
-  }
-
-  // Get meta block content for a week
-  const getMetaBlockContent = (week: Week): { months: string[]; weekNumber: number; year: number } => {
-    const firstDay = week.days[0] // Monday
-    
-    // Check if first day of month (the 1st) is in this week
-    let firstOfMonthDate: Date | null = null
-    
-    for (const day of week.days) {
-      if (day.getDate() === 1) {
-        firstOfMonthDate = day
-        break
-      }
-    }
-    
-    const months: string[] = []
-    const mondayMonth = firstDay.toLocaleDateString('en-US', { month: 'short' })
-    
-    // If the 1st of a month is in this week and it's a different month than Monday
-    if (firstOfMonthDate && getMonthKey(firstOfMonthDate) !== getMonthKey(firstDay)) {
-      // Show both months: Monday's month first, then the month with the 1st
-      months.push(mondayMonth)
-      const firstOfMonthMonth = firstOfMonthDate.toLocaleDateString('en-US', { month: 'short' })
-      months.push(firstOfMonthMonth)
-    } else {
-      // Only one month in this week
-      months.push(mondayMonth)
-    }
-    
-    const weekNumber = getWeekNumber(firstDay)
-    const year = firstDay.getFullYear()
-    
-    return { months, weekNumber, year }
   }
 
   return (
@@ -282,10 +210,8 @@ export default function Calendar() {
       {/* Calendar Content */}
       <div className={styles.calendarContainer} ref={containerRef}>
         {weeks.map((week, weekIndex) => {
-          const firstDay = week.days[0]
           const previousWeek = weekIndex > 0 ? weeks[weekIndex - 1] : null
           const previousLastDay = previousWeek ? previousWeek.days[6] : null
-          const metaContent = getMetaBlockContent(week)
 
           return (
             <div 
@@ -295,35 +221,18 @@ export default function Calendar() {
             >
               {/* Week Row */}
               <div className={styles.weekRow}>
-                {/* Meta Block */}
-                <div className={styles.metaBlock}>
-                  <div className={styles.metaContent}>
-                    <div className={styles.metaMonths}>
-                      {metaContent.months.map((month, idx) => (
-                        <span key={idx} className={styles.metaMonth}>{month}</span>
-                      ))}
-                    </div>
-                    <div className={styles.metaYear}>{metaContent.year}</div>
-                    <div className={styles.metaWeek}>W{metaContent.weekNumber}</div>
-                  </div>
-                </div>
+                {/* Week Header */}
+                <WeekHeader week={week} />
 
                 {/* Day Cells */}
-                {week.days.map((day, dayIndex) => {
-                  const isMonthBorder = dayIndex === 0 && isNewMonth(day, previousLastDay)
-                  
-                  return (
-                    <div
-                      key={`${week.weekOffset}-${dayIndex}`}
-                      className={`${styles.dayCell} ${isToday(day) ? styles.today : ''} ${isMonthBorder ? styles.monthBorder : ''}`}
-                    >
-                      <div className={styles.dayLabel}>
-                        <span className={styles.dayName}>{getDayName(day)}</span>
-                        <span className={styles.dayNumber}>{formatDay(day)}</span>
-                      </div>
-                    </div>
-                  )
-                })}
+                {week.days.map((day, dayIndex) => (
+                  <DayCell
+                    key={`${week.weekOffset}-${dayIndex}`}
+                    day={day}
+                    isToday={isToday(day)}
+                    previousLastDay={dayIndex === 0 ? previousLastDay : null}
+                  />
+                ))}
               </div>
             </div>
           )
