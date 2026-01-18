@@ -1,0 +1,55 @@
+.dayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  flex-shrink: 0;
+  height: 32px;
+  min-height: 32px;
+}
+
+.dayName {
+  font-size: 10px;
+  font-weight: 500;
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dayNumber {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.dayHeader.today {
+  background-color: #f0f7ff;
+}
+
+.dayHeader.today .dayNumber {
+  color: #0066cc;
+  font-weight: 700;
+}
+
+.dayHeader.today .dayName {
+  color: #0066cc;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .dayHeader {
+    padding: 3px 6px;
+    height: 28px;
+    min-height: 28px;
+  }
+
+  .dayNumber {
+    font-size: 14px;
+  }
+
+  .dayName {
+    font-size: 9px;
+  }
+}
