@@ -21,6 +21,51 @@
   flex-shrink: 0;
   /* Safe area for iPhone notch */
   padding-top: env(safe-area-inset-top, 0);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.toolbarButtons {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #d0d0d0;
+  background-color: #ffffff;
+}
+
+.toolbarButton {
+  padding: 8px 14px;
+  background-color: #ffffff;
+  border: none;
+  border-right: 1px solid #d0d0d0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.toolbarButton:last-child {
+  border-right: none;
+}
+
+.toolbarButton:hover {
+  background-color: #f0f0f0;
+}
+
+.toolbarButton:active {
+  background-color: #e8e8e8;
+}
+
+.toolbarButton:focus {
+  outline: 2px solid #0066cc;
+  outline-offset: -2px;
+  z-index: 1;
 }
 
 .calendarContainer {
@@ -47,6 +92,15 @@
 
 /* Mobile optimizations */
 @media (max-width: 768px) {
+  .toolbar {
+    padding: 0 12px;
+  }
+
+  .toolbarButton {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
   .weekRow {
     min-height: calc((100vh - 120px) / 5);
     min-height: calc((100dvh - 120px) / 5);
