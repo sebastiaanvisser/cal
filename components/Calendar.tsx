@@ -199,8 +199,15 @@ export default function Calendar() {
     }
   }, [weeks])
 
-  const getMonthYear = (date: Date): string => {
-    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  const getMonthYear = (date: Date): { month: string; year: string } => {
+    return {
+      month: date.toLocaleDateString('en-US', { month: 'short' }),
+      year: date.getFullYear().toString()
+    }
+  }
+
+  const getMonthKey = (date: Date): string => {
+    return `${date.getFullYear()}-${date.getMonth()}`
   }
 
   const isNewMonth = (currentDate: Date, previousDate: Date | null): boolean => {
@@ -222,6 +229,49 @@ export default function Calendar() {
     return DAYS[date.getDay() === 0 ? 6 : date.getDay() - 1]
   }
 
+  // Get week number (ISO week number)
+  const getWeekNumber = (date: Date): number => {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+    const dayNum = d.getUTCDay() || 7
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum)
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
+    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
+  }
+
+  // Get meta block content for a week
+  const getMetaBlockContent = (week: Week): { months: string[]; weekNumber: number; year: number } => {
+    const firstDay = week.days[0] // Monday
+    
+    // Check if first day of month (the 1st) is in this week
+    let firstOfMonthDate: Date | null = null
+    
+    for (const day of week.days) {
+      if (day.getDate() === 1) {
+        firstOfMonthDate = day
+        break
+      }
+    }
+    
+    const months: string[] = []
+    const mondayMonth = firstDay.toLocaleDateString('en-US', { month: 'short' })
+    
+    // If the 1st of a month is in this week and it's a different month than Monday
+    if (firstOfMonthDate && getMonthKey(firstOfMonthDate) !== getMonthKey(firstDay)) {
+      // Show both months: Monday's month first, then the month with the 1st
+      months.push(mondayMonth)
+      const firstOfMonthMonth = firstOfMonthDate.toLocaleDateString('en-US', { month: 'short' })
+      months.push(firstOfMonthMonth)
+    } else {
+      // Only one month in this week
+      months.push(mondayMonth)
+    }
+    
+    const weekNumber = getWeekNumber(firstDay)
+    const year = firstDay.getFullYear()
+    
+    return { months, weekNumber, year }
+  }
+
   return (
     <div className={styles.container}>
       {/* Sticky Toolbar */}
@@ -235,19 +285,30 @@ export default function Calendar() {
           const firstDay = week.days[0]
           const previousWeek = weekIndex > 0 ? weeks[weekIndex - 1] : null
           const previousLastDay = previousWeek ? previousWeek.days[6] : null
-          const showMonthHeader = isNewMonth(firstDay, previousLastDay)
+          const metaContent = getMetaBlockContent(week)
 
           return (
-            <div key={`week-${week.weekOffset}`} data-week-offset={week.weekOffset}>
-              {/* Month/Year Header */}
-              {showMonthHeader && (
-                <div className={styles.monthHeader}>
-                  {getMonthYear(firstDay)}
-                </div>
-              )}
-
+            <div 
+              key={`week-${week.weekOffset}`} 
+              data-week-offset={week.weekOffset} 
+              className={styles.weekWrapper}
+            >
               {/* Week Row */}
               <div className={styles.weekRow}>
+                {/* Meta Block */}
+                <div className={styles.metaBlock}>
+                  <div className={styles.metaContent}>
+                    <div className={styles.metaMonths}>
+                      {metaContent.months.map((month, idx) => (
+                        <span key={idx} className={styles.metaMonth}>{month}</span>
+                      ))}
+                    </div>
+                    <div className={styles.metaYear}>{metaContent.year}</div>
+                    <div className={styles.metaWeek}>W{metaContent.weekNumber}</div>
+                  </div>
+                </div>
+
+                {/* Day Cells */}
                 {week.days.map((day, dayIndex) => {
                   const isMonthBorder = dayIndex === 0 && isNewMonth(day, previousLastDay)
                   
