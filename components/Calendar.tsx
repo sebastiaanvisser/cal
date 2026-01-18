@@ -254,7 +254,8 @@ export default function Calendar() {
                     key={`${week.weekOffset}-${dayIndex}`}
                     day={day}
                     isToday={isToday(day)}
-                    previousLastDay={dayIndex === 0 ? previousLastDay : null}
+                    dayIndex={dayIndex}
+                    weekDays={week.days}
                   />
                 ))}
               </div>

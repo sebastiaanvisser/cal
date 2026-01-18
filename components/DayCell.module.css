@@ -10,8 +10,22 @@
   min-height: 80px;
 }
 
-.dayCell.monthBorder {
-  border-left: 3px solid #333333;
+.dayCell.monthBorderLeft {
+  border-left-width: 3px;
+  border-left-color: #333333;
+  border-left-style: solid;
+}
+
+.dayCell.monthBorderTop {
+  border-top-width: 3px;
+  border-top-color: #333333;
+  border-top-style: solid;
+}
+
+.dayCell.monthBorderBottom {
+  border-bottom-width: 3px;
+  border-bottom-color: #333333;
+  border-bottom-style: solid;
 }
 
 .dayLabel {
