@@ -58,12 +58,14 @@ export default function DayCell({
     borders.bottom ? styles.monthBorderBottom : ''
   ].filter(Boolean).join(' ')
 
+  const isWeekend = day.getDay() === 0 || day.getDay() === 6
+
   return (
     <div
-      className={`${styles.dayCell} ${isToday ? styles.today : ''} ${borderClasses}`}
+      className={`${styles.dayCell} ${isToday ? styles.today : ''} ${isWeekend ? styles.weekend : ''} ${borderClasses}`}
       style={borderStyles}
     >
-      <DayHeader day={day} isToday={isToday} />
+      <DayHeader day={day} isToday={isToday} isWeekend={isWeekend} />
       <HourGrid fromHour={fromHour} toHour={toHour} hourHeight={hourHeight} />
     </div>
   )

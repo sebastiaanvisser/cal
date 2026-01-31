@@ -4,7 +4,8 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { Week } from './types'
 import WeekHeader from './WeekHeader'
 import DayCell from './DayCell'
-import Toolbar from './Toolbar'
+import DayHeader from './DayHeader'
+import Toolbar, { type ViewMode } from './Toolbar'
 import styles from './Calendar.module.css'
 
 const INITIAL_WEEKS_BEFORE = 50
@@ -15,6 +16,7 @@ const WEEKS_TO_LOAD = 50 // How many weeks to load at a time
 export default function Calendar() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [weeks, setWeeks] = useState<Week[]>([])
+  const [viewMode, setViewMode] = useState<ViewMode>('weekly')
   const todayRef = useRef<Date>(new Date())
   const baseWeekOffsetRef = useRef<number>(0) // Tracks the offset of the first week in our array
   const isLoadingRef = useRef<boolean>(false)
@@ -205,63 +207,112 @@ export default function Calendar() {
   const scrollToDate = useCallback((targetDate: Date) => {
     if (!containerRef.current || weeks.length === 0) return
 
-    // Find the week containing the target date
-    const targetIndex = weeks.findIndex(week => 
-      week.days.some(day => {
-        const dayTime = day.getTime()
-        const targetTime = targetDate.getTime()
-        return dayTime === targetTime || 
-               (dayTime <= targetTime && targetTime < dayTime + 86400000)
-      })
-    )
+    if (viewMode === 'daily') {
+      // Daily view: find the day row by matching calendar date
+      const allDays = weeks.flatMap(week => week.days)
+      const targetYear = targetDate.getFullYear()
+      const targetMonth = targetDate.getMonth()
+      const targetDay = targetDate.getDate()
+      const matchingDay = allDays.find(
+        d => d.getFullYear() === targetYear && d.getMonth() === targetMonth && d.getDate() === targetDay
+      )
+      if (matchingDay) {
+        const dayElement = containerRef.current.querySelector(
+          `[data-day-timestamp="${matchingDay.getTime()}"]`
+        ) as HTMLElement
+        if (dayElement) {
+          dayElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+      }
+    } else {
+      // Weekly view: find the week containing the target date
+      const targetIndex = weeks.findIndex(week =>
+        week.days.some(day => {
+          const dayTime = day.getTime()
+          const targetTime = targetDate.getTime()
+          return dayTime === targetTime ||
+            (dayTime <= targetTime && targetTime < dayTime + 86400000)
+        })
+      )
 
-    if (targetIndex !== -1) {
-      const weekElement = containerRef.current.querySelector(
-        `[data-week-offset="${weeks[targetIndex].weekOffset}"]`
-      ) as HTMLElement
-      
-      if (weekElement) {
-        weekElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      if (targetIndex !== -1) {
+        const weekElement = containerRef.current.querySelector(
+          `[data-week-offset="${weeks[targetIndex].weekOffset}"]`
+        ) as HTMLElement
+
+        if (weekElement) {
+          weekElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
       }
     }
-  }, [weeks])
+  }, [weeks, viewMode])
+
+  // Flatten weeks to days for daily view
+  const allDays = weeks.flatMap(week => week.days)
 
   return (
     <div className={styles.container}>
       {/* Sticky Toolbar */}
-      <Toolbar onScrollToDate={scrollToDate} today={todayRef.current} />
+      <Toolbar
+        onScrollToDate={scrollToDate}
+        today={todayRef.current}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+      />
 
       {/* Calendar Content */}
       <div className={styles.calendarContainer} ref={containerRef}>
-        {weeks.map((week, weekIndex) => {
-          const previousWeek = weekIndex > 0 ? weeks[weekIndex - 1] : null
-          const previousLastDay = previousWeek ? previousWeek.days[6] : null
+        {viewMode === 'weekly' ? (
+          weeks.map((week, weekIndex) => {
+            const previousWeek = weekIndex > 0 ? weeks[weekIndex - 1] : null
+            const previousLastDay = previousWeek ? previousWeek.days[6] : null
 
-          return (
-            <div 
-              key={`week-${week.weekOffset}`} 
-              data-week-offset={week.weekOffset} 
-              className={styles.weekWrapper}
-            >
-              {/* Week Row */}
-              <div className={styles.weekRow}>
-                {/* Week Header */}
-                <WeekHeader week={week} />
+            return (
+              <div 
+                key={`week-${week.weekOffset}`} 
+                data-week-offset={week.weekOffset} 
+                className={styles.weekWrapper}
+              >
+                {/* Week Row */}
+                <div className={styles.weekRow}>
+                  {/* Week Header */}
+                  <WeekHeader week={week} />
 
-                {/* Day Cells */}
-                {week.days.map((day, dayIndex) => (
-                  <DayCell
-                    key={`${week.weekOffset}-${dayIndex}`}
-                    day={day}
-                    isToday={isToday(day)}
-                    dayIndex={dayIndex}
-                    weekDays={week.days}
-                  />
-                ))}
+                  {/* Day Cells */}
+                  {week.days.map((day, dayIndex) => (
+                    <DayCell
+                      key={`${week.weekOffset}-${dayIndex}`}
+                      day={day}
+                      isToday={isToday(day)}
+                      dayIndex={dayIndex}
+                      weekDays={week.days}
+                    />
+                  ))}
+                </div>
               </div>
+            )
+          })
+        ) : (
+          /* Daily view: vertical list of days, header only */
+          <div className={styles.dailyViewContainer}>
+            <div className={styles.dailyViewRow}>
+              {allDays.map((day) => {
+                const lastDayOfMonth = new Date(day.getFullYear(), day.getMonth() + 1, 0)
+                const isLastOfMonth = day.getTime() === lastDayOfMonth.getTime()
+                const isWeekend = day.getDay() === 0 || day.getDay() === 6
+                return (
+                  <div
+                    key={day.getTime()}
+                    className={`${styles.dailyDayCell} ${isLastOfMonth ? styles.dailyMonthBorderBottom : ''} ${isWeekend ? styles.dailyDayCellWeekend : ''}`}
+                    data-day-timestamp={day.getTime()}
+                  >
+                    <DayHeader day={day} isToday={isToday(day)} variant="daily" isWeekend={isWeekend} />
+                  </div>
+                )
+              })}
             </div>
-          )
-        })}
+          </div>
+        )}
       </div>
     </div>
   )

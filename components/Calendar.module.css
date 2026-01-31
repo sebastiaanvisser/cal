@@ -51,3 +51,44 @@
 .weekRow {
   contain: layout style paint;
 }
+
+/* Daily view: vertical list of days */
+.dailyViewContainer {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  min-height: 100%;
+}
+
+.dailyViewRow {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.dailyDayCell {
+  width: 100%;
+  flex-shrink: 0;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #ffffff;
+}
+
+.dailyDayCell:last-child {
+  border-bottom: none;
+}
+
+.dailyDayCell.dailyDayCellWeekend {
+  background-color: #fff8f5;
+}
+
+/* Month separation border (same thickness as weekly: 4px, only bottom to avoid double line) */
+.dailyDayCell.dailyMonthBorderBottom {
+  border-bottom-width: 4px;
+  border-bottom-color: #333333;
+  border-bottom-style: solid;
+}
+
+.dailyDayCell.dailyMonthBorderBottom:last-child {
+  border-bottom: 4px solid #333333;
+}

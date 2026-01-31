@@ -3,12 +3,16 @@
 import { useCallback } from 'react'
 import styles from './Toolbar.module.css'
 
+export type ViewMode = 'weekly' | 'daily'
+
 interface ToolbarProps {
   onScrollToDate: (date: Date) => void
   today: Date
+  viewMode: ViewMode
+  onViewModeChange: (mode: ViewMode) => void
 }
 
-export default function Toolbar({ onScrollToDate, today }: ToolbarProps) {
+export default function Toolbar({ onScrollToDate, today, viewMode, onViewModeChange }: ToolbarProps) {
   // Scroll to previous month
   const scrollToPreviousMonth = useCallback(() => {
     const prevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1)
@@ -68,6 +72,22 @@ export default function Toolbar({ onScrollToDate, today }: ToolbarProps) {
 
   return (
     <div className={styles.toolbar}>
+      <div className={styles.viewModeButtons}>
+        <button
+          className={`${styles.toolbarButton} ${viewMode === 'weekly' ? styles.toolbarButtonActive : ''}`}
+          onClick={() => onViewModeChange('weekly')}
+          type="button"
+        >
+          Weekly
+        </button>
+        <button
+          className={`${styles.toolbarButton} ${viewMode === 'daily' ? styles.toolbarButtonActive : ''}`}
+          onClick={() => onViewModeChange('daily')}
+          type="button"
+        >
+          Daily
+        </button>
+      </div>
       <div className={styles.toolbarButtons}>
         <button 
           className={styles.toolbarButton}

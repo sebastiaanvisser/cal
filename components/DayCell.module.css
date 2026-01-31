@@ -30,6 +30,14 @@
   background-color: #f0f7ff;
 }
 
+.dayCell.weekend {
+  background-color: #fff8f5;
+}
+
+.dayCell.today.weekend {
+  background-color: #f0f7ff;
+}
+
 /* Mobile optimizations */
 @media (max-width: 768px) {
   .dayCell {

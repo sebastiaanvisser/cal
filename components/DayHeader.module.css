@@ -37,6 +37,39 @@
   color: #0066cc;
 }
 
+.dayHeader.weekend {
+  background-color: #fff8f5;
+}
+
+.dayHeader.today.weekend {
+  background-color: #f0f7ff;
+}
+
+/* Daily view variant: date+month left, day name right */
+.dayHeaderDaily .dayDateMonth {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.dayHeaderDaily .dayNumber {
+  font-size: 16px;
+}
+
+.dayHeaderDaily .dayMonth {
+  font-size: 12px;
+  font-weight: 500;
+  color: #666666;
+}
+
+.dayHeaderDaily .dayName {
+  font-size: 11px;
+}
+
+.dayHeader.today .dayMonth {
+  color: #0066cc;
+}
+
 /* Mobile optimizations */
 @media (max-width: 768px) {
   .dayHeader {
