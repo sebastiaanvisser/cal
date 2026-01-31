@@ -10,9 +10,9 @@ interface DayCellProps {
   isToday: boolean
   dayIndex: number // 0 = Monday, 6 = Sunday
   weekDays: Date[] // All days in the week
-  fromHour?: number // Start hour for hour grid (default: 6)
-  toHour?: number // End hour for hour grid (default: 22)
-  hourHeight?: number // Height of each hour block in pixels (default: 60)
+  fromHour?: number // Start hour for hour grid (default: 7)
+  toHour?: number // End hour for hour grid (default: 19)
+  hourHeight?: number // Height of each hour block in pixels (default: 20)
 }
 
 // Calculate month border styles for a day (returns CSS properties)
@@ -45,9 +45,9 @@ export default function DayCell({
   isToday, 
   dayIndex, 
   weekDays,
-  fromHour = 6,
-  toHour = 22,
-  hourHeight = 60
+  fromHour = 7,
+  toHour = 19,
+  hourHeight = 20
 }: DayCellProps) {
   const borders = calculateMonthBorders(day, dayIndex, weekDays)
   const borderStyles = calculateMonthBorderStyles(borders)

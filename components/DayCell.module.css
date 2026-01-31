@@ -4,7 +4,7 @@
   flex-direction: column;
   background-color: #ffffff;
   position: relative;
-  min-height: 80px;
+  min-height: 272px; /* 32px header + 240px hour grid */
   overflow: hidden;
 }
 
